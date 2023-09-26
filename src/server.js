@@ -1,15 +1,13 @@
 import exitHook from 'async-exit-hook'
 import express from 'express'
-import { closeDatabase, connectToDatabase, getDatabase } from './config/mongodb'
+import { closeDatabase, connectToDatabase } from './config/mongodb'
 import { env } from '~/config/environment'
+import { api_v1 } from '~/routes/v1'
 
 const START_SERVER = () => {
     const app = express()
 
-    app.get('/', async (req, res) => {
-        console.log(await getDatabase().listCollections().toArray())
-        res.send('<h1>Hello World!</h1><hr>')
-    })
+    app.use('/v1', api_v1)
 
     app.listen(env.APP_PORT, env.APP_HOST, () => {
         console.log(`Server is running at http://${env.APP_HOST}:${env.APP_PORT}`)
