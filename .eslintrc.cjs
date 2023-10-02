@@ -18,7 +18,7 @@ module.exports = {
         'no-unused-vars': 1,
         'no-trailing-spaces': 0,
         'no-multi-spaces': 1,
-        'no-multiple-empty-lines': 1,
+        'no-multiple-empty-lines': 0,
         'space-before-blocks': ['error', 'always'],
         'object-curly-spacing': [1, 'always'],
         indent: ['warn', 4],
@@ -31,5 +31,6 @@ module.exports = {
         'comma-dangle': 0,
         'comma-spacing': 1,
         'arrow-spacing': 1,
+        'no-empty': 0,
     },
 }

@@ -1,5 +1,6 @@
 import Joi from 'joi'
 import { StatusCodes } from 'http-status-codes'
+import ApiError from '~/utils/apiError'
 
 const createNew = async (req, res, next) => {
     const correctCondition = Joi.object({
@@ -13,16 +14,10 @@ const createNew = async (req, res, next) => {
         // abortEarly: false - collect all errors not just the first one
         await correctCondition.validateAsync(req.body, { abortEarly: false })
 
-        res.status(StatusCodes.CREATED).json({
-            message: 'POST - Created new board',
-        })
+        // If the validation passes, we call next() to pass control to the next middleware function (i.e. boardController.createNew)
+        next()
     } catch (error) {
-        console.log('Error: ', error)
-
-        // The 422 (Unprocessable Entity) status code means the server understands the content type of the request entity, and the syntax of the request entity is correct, but it was unable to process the contained instructions.
-        res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
-            error: new Error(error).message
-        })
+        next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message))
     }
 }
 

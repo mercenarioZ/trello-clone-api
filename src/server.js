@@ -3,6 +3,7 @@ import express from 'express'
 import { closeDatabase, connectToDatabase } from './config/mongodb'
 import { env } from '~/config/environment'
 import { api_v1 } from '~/routes/v1'
+import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware'
 
 const START_SERVER = () => {
     const app = express()
@@ -12,8 +13,13 @@ const START_SERVER = () => {
 
     app.use('/v1', api_v1)
 
+    // Middleware to handle errors
+    app.use(errorHandlingMiddleware)
+
     app.listen(env.APP_PORT, env.APP_HOST, () => {
-        console.log(`Server is running at http://${env.APP_HOST}:${env.APP_PORT}`)
+        console.log(
+            `Server is running at http://${env.APP_HOST}:${env.APP_PORT}`
+        )
     })
 
     // Clean up database connection when exiting
