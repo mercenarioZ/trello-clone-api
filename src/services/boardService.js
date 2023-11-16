@@ -1,3 +1,4 @@
+import { boardModel } from '~/models/boardModel'
 import { slugify } from '~/utils/formatters'
 
 const createNew = async (requestBody) => {
@@ -7,7 +8,14 @@ const createNew = async (requestBody) => {
             slug: slugify(requestBody.title),
         }
 
-        return newBoard
+        const createdBoard = await boardModel.createNew(newBoard)
+        console.log(createdBoard)
+
+        // Get new board
+        const getNewBoard = await boardModel.findById(createdBoard.insertedId)
+        console.log(getNewBoard)
+
+        return getNewBoard
     } catch (error) {
         // throw error
     }
