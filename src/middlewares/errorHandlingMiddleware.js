@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { StatusCodes } from 'http-status-codes'
+import { env } from '~/config/environment'
 
 // This middleware will be used to handle errors from all routes
 export const errorHandlingMiddleware = (err, req, res, next) => {
@@ -12,7 +13,9 @@ export const errorHandlingMiddleware = (err, req, res, next) => {
         message: err.message || StatusCodes[err.statusCode], 
         stack: err.stack,
     }
-    // console.error(responseError)
+
+    // If the environment is production, remove the stack trace
+    if (env.BUILD_MODE !== 'dev') delete responseError.stack
 
     // Send the error message to the client
     res.status(responseError.statusCode).json(responseError)
