@@ -2,8 +2,12 @@ import Joi from 'joi'
 import { getDatabase } from '~/config/mongodb'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 import { ObjectId } from 'mongodb'
+import { columnModel } from './columnModel'
+import { cardModel } from './cardModel'
 
 const BOARD_COLLECTION_NAME = 'boards'
+
+// Schema Validation
 const BOARD_COLLECTION_SCHEMA = Joi.object({
     title: Joi.string().required().min(3).max(50).trim().strict(),
     slug: Joi.string().required().min(3).trim().strict(),
@@ -22,7 +26,8 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
 
 const validateSchema = async (data) => {
     return await BOARD_COLLECTION_SCHEMA.validateAsync(data, {
-        abortEarly: false, // show all errors
+        // abortEarly = false: return all errors at once, instead of just the first one Joi encounters.
+        abortEarly: false,
     })
 }
 
@@ -51,9 +56,49 @@ const findById = async (boardId) => {
     }
 }
 
+const getDetail = async (boardId) => {
+    try {
+        const result = await getDatabase()
+            .collection(BOARD_COLLECTION_NAME)
+            .aggregate([
+                {
+                    $match: {
+                        _id: new ObjectId(boardId),
+                        _destroy: false,
+                    },
+                },
+
+                {
+                    // lookup syntax: https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/
+                    $lookup: {
+                        from: columnModel.COLUMN_COLLECTION_NAME,
+                        localField: '_id',
+                        foreignField: 'boardId',
+                        as: 'columns',
+                    },
+                },
+
+                {
+                    $lookup: {
+                        from: cardModel.CARD_COLLECTION_NAME,
+                        localField: '_id',
+                        foreignField: 'boardId',
+                        as: 'cards',
+                    },
+                },
+            ])
+            .toArray()
+            
+        return result[0] || {}
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
 export const boardModel = {
     BOARD_COLLECTION_NAME,
     BOARD_COLLECTION_SCHEMA,
     createNew,
     findById,
+    getDetail,
 }

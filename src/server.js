@@ -4,9 +4,14 @@ import { closeDatabase, connectToDatabase } from './config/mongodb'
 import { env } from '~/config/environment'
 import { api_v1 } from '~/routes/v1'
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware'
+import cors from 'cors'
+import { corsOptions } from './config/cors'
 
 const START_SERVER = () => {
     const app = express()
+
+    // Enable CORS
+    app.use(cors(corsOptions))
 
     // Parse incoming requests with JSON payloads
     app.use(express.json())

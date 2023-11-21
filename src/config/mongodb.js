@@ -1,11 +1,11 @@
-import { MongoClient, ServerApiVersion } from 'mongodb'
-import { env } from './environment'
+import { MongoClient, ServerApiVersion } from 'mongodb';
+import { env } from './environment';
 
-const MONGODB_URI = env.MONGODB_URI
+const MONGODB_URI = env.MONGODB_URI;
 
-const DATABASE_NAME = env.DATABASE_NAME
+const DATABASE_NAME = env.DATABASE_NAME;
 
-let trelloDatabaseInstance = null
+let trelloDatabaseInstance = null;
 
 const mongoClientInstance = new MongoClient(MONGODB_URI, {
     serverApi: {
@@ -13,24 +13,24 @@ const mongoClientInstance = new MongoClient(MONGODB_URI, {
         strict: true,
         deprecationErrors: true,
     },
-})
+});
 
 // Connect to MongoDB
 export const connectToDatabase = async () => {
-    await mongoClientInstance.connect()
+    await mongoClientInstance.connect();
 
-    trelloDatabaseInstance = mongoClientInstance.db(DATABASE_NAME)
-}
+    trelloDatabaseInstance = mongoClientInstance.db(DATABASE_NAME);
+};
 
 export const getDatabase = () => {
     if (!trelloDatabaseInstance) {
-        throw new Error('Database not initialized')
+        throw new Error('Database not initialized');
     }
 
-    return trelloDatabaseInstance
-}
+    return trelloDatabaseInstance;
+};
 
 // Close MongoDB connection when exiting
 export const closeDatabase = async () => {
-    await mongoClientInstance.close()
-}
+    await mongoClientInstance.close();
+};
